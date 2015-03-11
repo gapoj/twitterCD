@@ -9,11 +9,18 @@
 
 #import "ViewController.h"
 #import "FHSTwitterEngine.h"
+#import "FollowersViewController.h"
+
+#define consumerkey @"WR0WDIxzUIMqH6lL6vEALqbSw"
+#define secretConsumerkey @"vj4Dw3xH0txTAZ7zTrRAUFCRlOGWecHOOKkYGGFDZ134JbKkBJ"
+
 
 @interface ViewController () <FHSTwitterEngineAccessTokenDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, strong) UITableView *theTableView;
+@property (weak, nonatomic) IBOutlet UITableView *theTableView;
+//@property (nonatomic, weak) UITableView *theTableView;
 @property (nonatomic, assign) BOOL isStreaming;
+
 
 @end
 
@@ -22,24 +29,9 @@
 - (void)loadView {
     [super loadView];
     self.view.backgroundColor = [UIColor lightGrayColor];
+
     
-    self.theTableView = [[UITableView alloc]initWithFrame:UIScreen.mainScreen.bounds style:UITableViewStylePlain];
-    _theTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    _theTableView.dataSource = self;
-    _theTableView.delegate = self;
-    _theTableView.contentInset = UIEdgeInsetsMake(20+44, 0, 0, 0);
-    _theTableView.scrollIndicatorInsets = _theTableView.contentInset;
-    [self.view addSubview:_theTableView];
-    
-    UINavigationBar *bar = [[UINavigationBar alloc]initWithFrame:CGRectMake(0, 0, 320, (UIDevice.currentDevice.systemVersion.floatValue >= 7.0f)?64:44)];
-    bar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
-    UINavigationItem *navItem = [[UINavigationItem alloc]initWithTitle:@"Twitter Followers"];
-    navItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"XAuth" style:UIBarButtonItemStylePlain target:self action:@selector(loginXAuth)];
-    navItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"OAuth" style:UIBarButtonItemStylePlain target:self action:@selector(loginOAuth)];
-    [bar pushNavigationItem:navItem animated:NO];
-    [self.view addSubview:bar];
-    
-    [[FHSTwitterEngine sharedEngine]permanentlySetConsumerKey:@"Xg3ACDprWAH8loEPjMzRg" andSecret:@"9LwYDxw1iTc6D9ebHdrYCZrJP4lJhQv5uf4ueiPHvJ0"];
+    [[FHSTwitterEngine sharedEngine]permanentlySetConsumerKey:consumerkey andSecret:secretConsumerkey];
     [[FHSTwitterEngine sharedEngine]setDelegate:self];
     [[FHSTwitterEngine sharedEngine]loadAccessToken];
 }
@@ -47,7 +39,7 @@
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return FHSTwitterEngine.sharedEngine.isAuthorized?5:3;
+    return FHSTwitterEngine.sharedEngine.isAuthorized?3:1;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -55,17 +47,13 @@
         case 0:
             [self postTweet];
             break;
+      
         case 1:
-            [self logTimeline];
-            break;
-        case 2:
-            [self toggleStreaming];
-            break;
-        case 3:
             [self listResults];
             break;
-        case 4:
+        case 2:
             [self logout];
+            
             break;
         default:
             break;
@@ -89,18 +77,10 @@
             cell.detailTextLabel.text = nil;
             break;
         case 1:
-            cell.textLabel.text = @"Log Timeline";
+            cell.textLabel.text = @"Followers";
             cell.detailTextLabel.text = nil;
             break;
         case 2:
-            cell.textLabel.text = @"Log Stream";
-            cell.detailTextLabel.text = nil;
-            break;
-        case 3:
-            cell.textLabel.text = @"get followers";
-            cell.detailTextLabel.text = nil;
-            break;
-        case 4:
             cell.textLabel.text = @"Logout";
             cell.detailTextLabel.text = FHSTwitterEngine.sharedEngine.authenticatedUsername;
             break;
@@ -177,7 +157,7 @@
     return [[NSUserDefaults standardUserDefaults]objectForKey:@"SavedAccessHTTPBody"];
 }
 
-- (void)loginOAuth {
+- (IBAction)loginOAuth {
     UIViewController *loginController = [[FHSTwitterEngine sharedEngine]loginControllerWithCompletionHandler:^(BOOL success) {
         NSLog(success?@"L0L success":@"O noes!!! Loggen faylur!!!");
         [_theTableView reloadData];
@@ -185,7 +165,8 @@
     [self presentViewController:loginController animated:YES completion:nil];
 }
 
-- (void)loginXAuth {
+
+- (IBAction)loginXAuth {
     UIAlertView *av = [[UIAlertView alloc]initWithTitle:@"xAuth Login" message:@"Enter your Twitter login credentials:" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Login", nil];
     [av setAlertViewStyle:UIAlertViewStyleLoginAndPasswordInput];
     [[av textFieldAtIndex:0]setPlaceholder:@"Username"];
@@ -198,21 +179,7 @@
     [_theTableView reloadData];
 }
 
-- (void)logTimeline {
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @autoreleasepool {
-            NSLog(@"%@",[[FHSTwitterEngine sharedEngine]getTimelineForUser:[[FHSTwitterEngine sharedEngine]authenticatedID] isID:YES count:10]);
-            
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                @autoreleasepool {
-                    [[[UIAlertView alloc]initWithTitle:@"Complete" message:@"Your list of followers has been fetched. Check your debugger." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil]show];
-                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-                }
-            });
-        }
-    });
-}
+
 
 - (void)postTweet {
     UIAlertView *av = [[UIAlertView alloc]initWithTitle:@"Tweet" message:@"Write a tweet below. Make sure you're using a testing account." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Tweet", nil];
@@ -221,33 +188,13 @@
     [av show];
 }
 
-- (void)toggleStreaming {
-    NSLog(@"Streaming");
-    if (!_isStreaming) {
-        self.isStreaming = YES;
-        [[FHSTwitterEngine sharedEngine]streamSampleStatusesWithBlock:^(id result, BOOL *stop) {
-            NSLog(@"%@",result);
-            if (_isStreaming == NO) {
-                *stop = YES;
-            }
-        }];
-    } else {
-        self.isStreaming = NO;
-    }
-}
+
 
 - (void)listResults {
-    
-    NSString *username = [FHSTwitterEngine sharedEngine].authenticatedUsername;
-    NSString *urlstring = [NSString stringWithFormat:@"http://api.twitter.com/1/followers/ids.json?id=%@",username];
-    
-    NSMutableDictionary *   dict1 = [[FHSTwitterEngine sharedEngine]listFollowersForUser:username isID:NO withCursor:@"-1" andUsersPerPage:@"200"];
-    
-    //  NSLog(@"====> %@",[dict1 objectForKey:@"users"] );        // Here You get all the data
-    NSMutableArray *array=[dict1 objectForKey:@"users"];
-    for(int i=0;i<[array count];i++)
-    {
-        NSLog(@"names:%@",[[array objectAtIndex:i]objectForKey:@"name"]);
-    }
+   
+    UIViewController *Main = [self.storyboard instantiateViewControllerWithIdentifier:@"Followers"];
+    [self.navigationController pushViewController:Main animated:YES];
 }
+
+
 @end
