@@ -18,7 +18,6 @@
 @interface ViewController () <FHSTwitterEngineAccessTokenDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *theTableView;
-//@property (nonatomic, weak) UITableView *theTableView;
 @property (nonatomic, assign) BOOL isStreaming;
 
 
