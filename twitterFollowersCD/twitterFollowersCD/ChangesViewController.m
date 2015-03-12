@@ -43,8 +43,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChangesCell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ChangesCell"];
-    }/*[item objectForKey:@"name"];
-      friend.screen_name =[item objectForKey:@"screen_name"];*/
+    }
     [[cell textLabel] setText:[object objectForKey:@"name"] ];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"@%@",[object objectForKey:@"screen_name"]];
     return cell;

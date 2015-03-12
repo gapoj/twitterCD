@@ -15,10 +15,14 @@
 @import CoreData;
 
 @interface FollowersViewController ()< UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate,NSFetchedResultsControllerDelegate >
-@property NSMutableArray *updatedFollowersArray;
+@property NSArray *updatedFollowersArray;
+@property NSArray *previousFollowersArray;
 @property NSMutableArray *NewFollowersArray;
+@property NSMutableArray *unFollowersArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) OTSPersistance *databaseManager;
+
+@property BOOL updated;
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 
@@ -48,6 +52,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.updated = NO;
     self.view.backgroundColor = [UIColor whiteColor];
     [self setTitle:@"Followers"];
     self.NewFollowersArray = [[NSMutableArray alloc]init];
@@ -74,14 +79,48 @@
     self.NewFollowersArray = [[NSMutableArray alloc]init];
     [self bringFollowers];
 }
+- (void)notUpdatedAlert {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Not Updated" message:@"You have to alert your followers first" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    
+    [alert show];
+}
+
 - (IBAction)onNewfollowers:(id)sender {
-    ChangesViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Changes"];
-    vc.changedFollowers = [NSArray arrayWithArray:self.NewFollowersArray];
-    vc.typeOfFollowers=@"New Followers";
-    [self.navigationController pushViewController:vc animated:YES];
+    if (self.updated) {
+        ChangesViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Changes"];
+        vc.changedFollowers = [NSArray arrayWithArray:self.NewFollowersArray];
+        vc.typeOfFollowers=@"New Followers";
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        [self notUpdatedAlert];
+    }
+   
+}
+
+- (void)searchForUnfollowers {
+    self.unFollowersArray= [[NSMutableArray alloc]init];
+    NSManagedObjectContext *searchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    
+    for (Follower * f in self.previousFollowersArray) {
+        if ([self unfollowerCheck:f.id_str andContext:searchContext]) {
+            NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:f.name, @"name", f.id_str, @"id_str",f.screen_name,@"screen_name" ,nil];
+            
+            [self.unFollowersArray addObject:dict];
+        }
+    }
 }
 
 - (IBAction)onUnfollowers:(id)sender {
+    if (self.updated) {
+        ChangesViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Changes"];
+        [self searchForUnfollowers];
+    
+        vc.changedFollowers = [NSArray arrayWithArray:self.unFollowersArray];
+        vc.typeOfFollowers=@"UnFollowers";
+        [self.navigationController pushViewController:vc animated:YES];
+    }else{
+        [self notUpdatedAlert];
+    }
 }
 
 - (void)updateOrCreateFollowerWithDictionary:(NSDictionary*)item andContext:(NSManagedObjectContext *)batchAddContext {
@@ -101,12 +140,23 @@
     }
     friend.name =[item objectForKey:@"name"];
     friend.screen_name =[item objectForKey:@"screen_name"];
-    
-    
-    
-    
  
 }
+- (BOOL)unfollowerCheck:(NSString*)id_str andContext:(NSManagedObjectContext *)context {
+             NSFetchRequest * request=[[NSFetchRequest alloc]initWithEntityName:@"Follower"];
+             NSSortDescriptor* sortDescriptor1 = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+             
+             NSPredicate *predicate= [NSPredicate predicateWithFormat:@"id_str == %@",id_str];
+             request.predicate = predicate;
+             request.sortDescriptors=[NSArray arrayWithObjects:sortDescriptor1, nil];
+            if([context executeFetchRequest:request error:nil].count == 0) {
+                return NO;
+             }
+    
+    return YES;
+    
+}
+
 
 - (void)bringFollowers {
     
@@ -117,8 +167,14 @@
        self.updatedFollowersArray =[dict1 objectForKey:@"users"];
   
     NSManagedObjectContext *batchAddContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+   
     [batchAddContext setParentContext:[[self databaseManager] mainThreadManagedObjectContext]];
     [batchAddContext performBlock:^{
+        NSFetchRequest * request=[[NSFetchRequest alloc]initWithEntityName:@"Follower"];
+        NSSortDescriptor* sortDescriptor1 = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+        request.sortDescriptors=[NSArray arrayWithObjects:sortDescriptor1, nil];
+         self.previousFollowersArray = [batchAddContext executeFetchRequest:request error:nil];
+       
         for (NSInteger itemCount = 0; itemCount < self.updatedFollowersArray.count; itemCount++) {
             NSDictionary * item = [self.updatedFollowersArray objectAtIndex:itemCount];
             
@@ -136,6 +192,8 @@
         [[self databaseManager] saveDataWithCompletionHandler:^(BOOL suceeded, NSError *error) {
             if (!suceeded) {
                 NSLog(@"Core Data save failed.");
+            }else{
+                self.updated = YES;
             }
         }];
     }];
