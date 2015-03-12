@@ -6,8 +6,7 @@
 //  Copyright (c) 2015 Globant. All rights reserved.
 //
 
-#import "ViewController.h"
+#import <UIKit/UIKit.h>
 
-@interface FollowersViewController : ViewController
-
+@interface FollowersViewController : UIViewController
 @end

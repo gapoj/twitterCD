@@ -7,7 +7,7 @@
 //
 
 
-#import "ViewController.h"
+#import "MainViewController.h"
 #import "FHSTwitterEngine.h"
 #import "FollowersViewController.h"
 
@@ -15,7 +15,7 @@
 #define secretConsumerkey @"vj4Dw3xH0txTAZ7zTrRAUFCRlOGWecHOOKkYGGFDZ134JbKkBJ"
 
 
-@interface ViewController () <FHSTwitterEngineAccessTokenDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MainViewController () <FHSTwitterEngineAccessTokenDelegate, UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *theTableView;
 @property (nonatomic, assign) BOOL isStreaming;
@@ -23,7 +23,7 @@
 
 @end
 
-@implementation ViewController
+@implementation MainViewController
 
 - (void)loadView {
     [super loadView];

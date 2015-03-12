@@ -9,13 +9,15 @@
 /* Begin PBXBuildFile section */
 		18078B781AAF8C6F0071F67D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078B771AAF8C6F0071F67D /* main.m */; };
 		18078B7B1AAF8C6F0071F67D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078B7A1AAF8C6F0071F67D /* AppDelegate.m */; };
-		18078B811AAF8C6F0071F67D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078B801AAF8C6F0071F67D /* ViewController.m */; };
+		18078B811AAF8C6F0071F67D /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078B801AAF8C6F0071F67D /* MainViewController.m */; };
 		18078B841AAF8C6F0071F67D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18078B821AAF8C6F0071F67D /* Main.storyboard */; };
 		18078B861AAF8C6F0071F67D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18078B851AAF8C6F0071F67D /* Images.xcassets */; };
 		18078B891AAF8C6F0071F67D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 18078B871AAF8C6F0071F67D /* LaunchScreen.xib */; };
 		18078B951AAF8C6F0071F67D /* twitterFollowersCDTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078B941AAF8C6F0071F67D /* twitterFollowersCDTests.m */; };
 		18078BA31AAF8CBB0071F67D /* FHSStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078BA01AAF8CBB0071F67D /* FHSStream.m */; };
 		18078BA41AAF8CBB0071F67D /* FHSTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 18078BA21AAF8CBB0071F67D /* FHSTwitterEngine.m */; };
+		1856852B1AB2016100067DDB /* Follower.m in Sources */ = {isa = PBXBuildFile; fileRef = 1856852A1AB2016100067DDB /* Follower.m */; };
+		1856852E1AB21A2500067DDB /* ChangesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1856852D1AB21A2500067DDB /* ChangesViewController.m */; };
 		18A086981AB0B453001243CF /* FollowersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A086961AB0B453001243CF /* FollowersViewController.m */; };
 		18A0869E1AB0D7BD001243CF /* OTSPersistance.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A0869D1AB0D7BD001243CF /* OTSPersistance.m */; };
 		18A086A11AB0D97A001243CF /* MyDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 18A0869F1AB0D97A001243CF /* MyDataModel.xcdatamodeld */; };
@@ -37,8 +39,8 @@
 		18078B771AAF8C6F0071F67D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		18078B791AAF8C6F0071F67D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		18078B7A1AAF8C6F0071F67D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		18078B7F1AAF8C6F0071F67D /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		18078B801AAF8C6F0071F67D /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		18078B7F1AAF8C6F0071F67D /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		18078B801AAF8C6F0071F67D /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		18078B831AAF8C6F0071F67D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		18078B851AAF8C6F0071F67D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		18078B881AAF8C6F0071F67D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -49,6 +51,10 @@
 		18078BA01AAF8CBB0071F67D /* FHSStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHSStream.m; sourceTree = "<group>"; };
 		18078BA11AAF8CBB0071F67D /* FHSTwitterEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FHSTwitterEngine.h; sourceTree = "<group>"; };
 		18078BA21AAF8CBB0071F67D /* FHSTwitterEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FHSTwitterEngine.m; sourceTree = "<group>"; };
+		185685291AB2016100067DDB /* Follower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Follower.h; sourceTree = "<group>"; };
+		1856852A1AB2016100067DDB /* Follower.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Follower.m; sourceTree = "<group>"; };
+		1856852C1AB21A2500067DDB /* ChangesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangesViewController.h; sourceTree = "<group>"; };
+		1856852D1AB21A2500067DDB /* ChangesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangesViewController.m; sourceTree = "<group>"; };
 		18A086951AB0B453001243CF /* FollowersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FollowersViewController.h; path = ../FollowersViewController.h; sourceTree = "<group>"; };
 		18A086961AB0B453001243CF /* FollowersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FollowersViewController.m; path = ../FollowersViewController.m; sourceTree = "<group>"; };
 		18A0869C1AB0D7BD001243CF /* OTSPersistance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTSPersistance.h; sourceTree = "<group>"; };
@@ -100,15 +106,19 @@
 				18078B7A1AAF8C6F0071F67D /* AppDelegate.m */,
 				18A086951AB0B453001243CF /* FollowersViewController.h */,
 				18A086961AB0B453001243CF /* FollowersViewController.m */,
+				1856852C1AB21A2500067DDB /* ChangesViewController.h */,
+				1856852D1AB21A2500067DDB /* ChangesViewController.m */,
 				18A0869C1AB0D7BD001243CF /* OTSPersistance.h */,
 				18A0869D1AB0D7BD001243CF /* OTSPersistance.m */,
-				18078B7F1AAF8C6F0071F67D /* ViewController.h */,
-				18078B801AAF8C6F0071F67D /* ViewController.m */,
+				18078B7F1AAF8C6F0071F67D /* MainViewController.h */,
+				18078B801AAF8C6F0071F67D /* MainViewController.m */,
 				18078B821AAF8C6F0071F67D /* Main.storyboard */,
 				18078B851AAF8C6F0071F67D /* Images.xcassets */,
 				18078B871AAF8C6F0071F67D /* LaunchScreen.xib */,
 				18078B751AAF8C6F0071F67D /* Supporting Files */,
 				18A0869F1AB0D97A001243CF /* MyDataModel.xcdatamodeld */,
+				185685291AB2016100067DDB /* Follower.h */,
+				1856852A1AB2016100067DDB /* Follower.m */,
 			);
 			path = twitterFollowersCD;
 			sourceTree = "<group>";
@@ -252,11 +262,13 @@
 			files = (
 				18A086981AB0B453001243CF /* FollowersViewController.m in Sources */,
 				18A086A11AB0D97A001243CF /* MyDataModel.xcdatamodeld in Sources */,
+				1856852B1AB2016100067DDB /* Follower.m in Sources */,
 				18A0869E1AB0D7BD001243CF /* OTSPersistance.m in Sources */,
+				1856852E1AB21A2500067DDB /* ChangesViewController.m in Sources */,
 				18078BA41AAF8CBB0071F67D /* FHSTwitterEngine.m in Sources */,
 				18078B7B1AAF8C6F0071F67D /* AppDelegate.m in Sources */,
 				18078BA31AAF8CBB0071F67D /* FHSStream.m in Sources */,
-				18078B811AAF8C6F0071F67D /* ViewController.m in Sources */,
+				18078B811AAF8C6F0071F67D /* MainViewController.m in Sources */,
 				18078B781AAF8C6F0071F67D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

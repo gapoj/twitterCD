@@ -9,11 +9,14 @@
 #import "FollowersViewController.h"
 #import "FHSTwitterEngine.h"
 #import "OTSPersistance.h"
+#import "Follower.h"
+#import "ChangesViewController.h"
 
 @import CoreData;
 
 @interface FollowersViewController ()< UIAlertViewDelegate, UITableViewDataSource, UITableViewDelegate,NSFetchedResultsControllerDelegate >
-@property NSMutableArray *followersArray;
+@property NSMutableArray *updatedFollowersArray;
+@property NSMutableArray *NewFollowersArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) OTSPersistance *databaseManager;
 
@@ -30,7 +33,7 @@
     
     NSManagedObjectContext *moc = [[self databaseManager] mainThreadManagedObjectContext];
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Follower"];
-    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:NO];
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
     [fetchRequest setSortDescriptors:@[ sort ]];
     
     NSFetchedResultsController *frc = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:moc sectionNameKeyPath:nil cacheName:nil];
@@ -46,8 +49,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    //**************
+    [self setTitle:@"Followers"];
+    self.NewFollowersArray = [[NSMutableArray alloc]init];
     [self setDatabaseManager:[[OTSPersistance alloc] init]];
     [[self databaseManager] setupCoreDataStackWithCompletionHandler:^(BOOL suceeded, NSError *error) {
         if (suceeded) {
@@ -68,27 +71,58 @@
 
 
 - (IBAction)onUpdate:(id)sender {
+    self.NewFollowersArray = [[NSMutableArray alloc]init];
     [self bringFollowers];
 }
 - (IBAction)onNewfollowers:(id)sender {
+    ChangesViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"Changes"];
+    vc.changedFollowers = [NSArray arrayWithArray:self.NewFollowersArray];
+    vc.typeOfFollowers=@"New Followers";
+    [self.navigationController pushViewController:vc animated:YES];
 }
+
 - (IBAction)onUnfollowers:(id)sender {
 }
+
+- (void)updateOrCreateFollowerWithDictionary:(NSDictionary*)item andContext:(NSManagedObjectContext *)batchAddContext {
+    NSFetchRequest * request=[[NSFetchRequest alloc]initWithEntityName:@"Follower"];
+    NSSortDescriptor* sortDescriptor1 = [[NSSortDescriptor alloc]initWithKey:@"name" ascending:YES];
+    
+    NSPredicate *predicate= [NSPredicate predicateWithFormat:@"id_str == %@",[item objectForKey:@"id_str"]];
+    request.predicate = predicate;
+    request.sortDescriptors=[NSArray arrayWithObjects:sortDescriptor1, nil];
+    Follower *friend=[batchAddContext executeFetchRequest:request error:nil].firstObject;
+    if(!friend) {
+        friend=[NSEntityDescription insertNewObjectForEntityForName:@"Follower" inManagedObjectContext:batchAddContext];
+        friend.id_str=[item objectForKey:@"id_str"];
+        friend.name =[item objectForKey:@"name"];
+        friend.screen_name =[item objectForKey:@"screen_name"];
+        [self.NewFollowersArray addObject:item];
+    }
+    friend.name =[item objectForKey:@"name"];
+    friend.screen_name =[item objectForKey:@"screen_name"];
+    
+    
+    
+    
+ 
+}
+
 - (void)bringFollowers {
     
     NSString *username = [FHSTwitterEngine sharedEngine].authenticatedUsername;
     
     NSMutableDictionary *   dict1 = [[FHSTwitterEngine sharedEngine]listFollowersForUser:username isID:NO withCursor:@"-1" andUsersPerPage:@"200"];
     
-    //  NSLog(@"====> %@",[dict1 objectForKey:@"users"] );        // Here You get all the data
-    self.followersArray =[dict1 objectForKey:@"users"];
+       self.updatedFollowersArray =[dict1 objectForKey:@"users"];
   
     NSManagedObjectContext *batchAddContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     [batchAddContext setParentContext:[[self databaseManager] mainThreadManagedObjectContext]];
     [batchAddContext performBlock:^{
-        for (NSInteger itemCount = 0; itemCount < self.followersArray.count; itemCount++) {
-            NSManagedObject *moDataItem = [[NSManagedObject alloc] initWithEntity:[NSEntityDescription entityForName:@"Follower" inManagedObjectContext:batchAddContext] insertIntoManagedObjectContext:batchAddContext];
-            [moDataItem setValue:[[self.followersArray objectAtIndex:itemCount]objectForKey:@"name"]forKey:@"name"];
+        for (NSInteger itemCount = 0; itemCount < self.updatedFollowersArray.count; itemCount++) {
+            NSDictionary * item = [self.updatedFollowersArray objectAtIndex:itemCount];
+            
+            [self updateOrCreateFollowerWithDictionary:item andContext:batchAddContext];
         }
         
         // Save the batchAddContext which pushes the items onto the main thread context
@@ -105,10 +139,7 @@
             }
         }];
     }];
-   /* for(int i=0;i<[self.followersArray count];i++)
-    {
-        NSLog(@"names:%@",[[self.followersArray objectAtIndex:i]objectForKey:@"name"]);
-    }*/
+ 
 }
 
 #pragma mark - UITableViewDataSource Methods
@@ -124,37 +155,17 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+    Follower *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CellID"];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"FollowerCell"];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CellID"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"FollowerCell"];
     }
-    [[cell textLabel] setText:[object valueForKey:@"name"]];
+    [[cell textLabel] setText:object.name ];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"@%@",object.screen_name];
     return cell;
 }
-/*
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.followersArray.count;
-}
 
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellID = @"CellID";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellID];
-    
-    if (!cell) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellID];
-    }
-   
-    cell.textLabel.text = [[self.followersArray objectAtIndex:indexPath.row]objectForKey:@"name"];
-    cell.detailTextLabel.text = nil;
-    
-    return cell;
-}
-*/
 
 #pragma mark - NSFetchedResultsControllerDelegate Methods
 
