@@ -2,7 +2,7 @@
 //  Follower.h
 //  twitterFollowersCD
 //
-//  Created by Guillermo Apoj on 12/3/15.
+//  Created by Guillermo Apoj on 13/3/15.
 //  Copyright (c) 2015 Globant. All rights reserved.
 //
 
@@ -12,8 +12,9 @@
 
 @interface Follower : NSManagedObject
 
-@property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * id_str;
+@property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * screen_name;
+@property (nonatomic, retain) NSDate * lastComprovation;
 
 @end
